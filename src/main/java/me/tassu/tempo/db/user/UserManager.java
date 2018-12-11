@@ -45,10 +45,14 @@ public class UserManager {
         MongoManager.getInstance().getDatabase().getCollection("users").watch()
                 .fullDocument(FullDocument.UPDATE_LOOKUP)
                 .forEach((Block<ChangeStreamDocument<Document>>) change -> {
-                    val document = change.getFullDocument();
-                    val uuid = UUID.fromString(change.getFullDocument().getString("_id"));
-                    if (users.containsKey(uuid)) {
-                        users.get(uuid).reloadFromDocument(document);
+                    try {
+                        val document = change.getFullDocument();
+                        val uuid = UUID.fromString(change.getFullDocument().getString("_id"));
+                        if (users.containsKey(uuid)) {
+                            users.get(uuid).reloadFromDocument(document);
+                        }
+                    } catch (Exception ex) {
+                        Tempo.getInstance().getLogger().error("Exception in user change stream", ex);
                     }
                 });
     }
@@ -98,18 +102,22 @@ public class UserManager {
 
     private void save() {
         for (val uuid : users.keySet()) {
-            save(users.get(uuid));
+            try {
+                save(users.get(uuid));
 
-            if (locked.containsKey(uuid)) {
-                if (locked.get(uuid) > System.currentTimeMillis()) {
-                    locked.remove(uuid);
-                } else {
-                    continue;
+                if (locked.containsKey(uuid)) {
+                    if (locked.get(uuid) > System.currentTimeMillis()) {
+                        locked.remove(uuid);
+                    } else {
+                        continue;
+                    }
                 }
-            }
 
-            if (!Tempo.getInstance().getServer().getPlayer(uuid).isPresent()) {
-                users.remove(uuid);
+                if (!Tempo.getInstance().getServer().getPlayer(uuid).isPresent()) {
+                    users.remove(uuid);
+                }
+            } catch (Exception ex) {
+                Tempo.getInstance().getLogger().error("Exception while saving users", ex);
             }
         }
     }
