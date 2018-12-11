@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.2"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'net.ltgt.apt' version '0.19'
+    id 'net.kyori.blossom' version '1.1.0'
+    id 'io.franzbecker.gradle-lombok' version '1.14'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+}
+
+group 'me.tassu'
+version '1.0.0'
+description 'Server management interface for Velocity.'
+
+defaultTasks 'build'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.tassu.me' }
+    maven { url = 'https://repo.spongepowered.org/maven' }
+    maven { url = 'https://repo.velocitypowered.com/snapshots/' }
+}
+
+dependencies {
+    compileOnly 'com.velocitypowered:velocity-api:1.0-SNAPSHOT'
+    annotationProcessor 'com.velocitypowered:velocity-api:1.0-SNAPSHOT'
+
+    compile 'me.tassu.util:core:1.0.02'
+    compile 'me.tassu.cfg:hocon:1.0.01'
+    compile 'commons-io:commons-io:2.6'
+    compile 'org.mongodb:mongodb-driver-sync:3.8.2'
+}
+
+blossom {
+    replaceTokenIn('src/main/java/me/tassu/tempo/Tempo.java')
+    replaceToken '@version@', project.version
+    replaceToken '@desc@', project.description
+}
+
+shadowJar {
+    classifier = null
+}
+
+build.dependsOn(shadowJar)
