@@ -3,6 +3,7 @@ package me.tassu.tempo.db.user.rank;
 import com.google.common.collect.Maps;
 import com.mongodb.client.model.changestream.ChangeStreamDocument;
 import com.mongodb.client.model.changestream.FullDocument;
+import com.mongodb.client.model.changestream.OperationType;
 import lombok.val;
 import me.tassu.tempo.Tempo;
 import me.tassu.tempo.db.MongoManager;
@@ -40,6 +41,14 @@ public class RankManager {
         collection.watch()
                 .fullDocument(FullDocument.UPDATE_LOOKUP)
                 .forEach((Consumer<ChangeStreamDocument<Document>>) change -> {
+                    if (change.getOperationType() == OperationType.DELETE) {
+                        val name = change.getDocumentKey().getString("_id").getValue();
+                        ranks.remove(name);
+
+                        Tempo.getInstance().getLogger().info("Removed rank {}.", name);
+                        return;
+                    }
+
                     val document = change.getFullDocument();
                     val name = change.getFullDocument().getString("_id");
                     ranks.remove(name);
