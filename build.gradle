@@ -11,6 +11,7 @@ plugins {
     id 'java'
     id 'net.ltgt.apt' version '0.19'
     id 'net.kyori.blossom' version '1.1.0'
+    id 'net.minecrell.licenser' version '0.4.1'
     id 'io.franzbecker.gradle-lombok' version '1.14'
     id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
@@ -19,7 +20,7 @@ group 'me.tassu'
 version '1.0.0'
 description 'Server management interface for Velocity.'
 
-defaultTasks 'build'
+defaultTasks 'licenseFormat', 'build'
 
 sourceCompatibility = 1.8
 
@@ -44,6 +45,16 @@ blossom {
     replaceTokenIn('src/main/java/me/tassu/tempo/Tempo.java')
     replaceToken '@version@', project.version
     replaceToken '@desc@', project.description
+}
+
+jar {
+    from 'LICENSE'
+}
+
+license {
+    header = project.file('LICENSE')
+    include '**/*.java'
+    newLine = true
 }
 
 shadowJar {
