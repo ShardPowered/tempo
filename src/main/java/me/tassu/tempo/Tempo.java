@@ -3,6 +3,7 @@ package me.tassu.tempo;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -18,9 +19,12 @@ import me.tassu.tempo.db.user.rank.RankManager;
 import me.tassu.tempo.motd.MotdListener;
 import me.tassu.tempo.whitelist.WhitelistAdminCommand;
 import me.tassu.tempo.whitelist.WhitelistCommand;
+import me.tassu.tempo.whitelist.WhitelistConfig;
 import me.tassu.tempo.whitelist.WhitelistListener;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
@@ -78,14 +82,28 @@ public class Tempo {
                 .delay(1, TimeUnit.SECONDS)
                 .schedule();
 
-        // Register all the listeners
-        server.getEventManager().register(this, new MotdListener(this));
-        server.getEventManager().register(this, new WhitelistListener());
 
-        // Register all the commands
-        server.getCommandManager().register(new FindCommand(server), "find");
+        // whitelist
+        new WhitelistConfig(factory);
+        server.getEventManager().register(this, new WhitelistListener());
         server.getCommandManager().register(new WhitelistCommand(), "whitelist");
         server.getCommandManager().register(new WhitelistAdminCommand(), "whitelistadmin");
+
+        // motd
+        server.getEventManager().register(this, new MotdListener(this));
+
+        // other commands
+        server.getCommandManager().register(new FindCommand(server), "find");
+    }
+
+    @Subscribe
+    public void onStop(ProxyShutdownEvent event) {
+        try {
+            WhitelistConfig.getInstance().save();
+            MongoManager.getInstance().getConfig().save();
+        } catch (ObjectMappingException | IOException e) {
+            throw new RuntimeException("Failure saving whitelist config", e);
+        }
     }
 
 }

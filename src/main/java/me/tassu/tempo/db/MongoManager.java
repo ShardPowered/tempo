@@ -10,6 +10,7 @@ import com.mongodb.event.ServerHeartbeatFailedEvent;
 import com.mongodb.event.ServerHeartbeatStartedEvent;
 import com.mongodb.event.ServerHeartbeatSucceededEvent;
 import com.mongodb.event.ServerMonitorListener;
+import lombok.Getter;
 import lombok.val;
 import org.bson.Document;
 
@@ -24,6 +25,7 @@ public class MongoManager {
     }
     private MongoManager() {}
 
+    @Getter
     private MongoConfig config;
     private boolean connected = false;
 

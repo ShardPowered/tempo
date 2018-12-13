@@ -1,6 +1,7 @@
 package me.tassu.tempo.whitelist;
 
 import com.velocitypowered.api.command.CommandSource;
+import lombok.experimental.var;
 import lombok.val;
 import me.tassu.tempo.api.TempoCommand;
 import me.tassu.tempo.db.user.UserManager;
@@ -21,17 +22,37 @@ public class WhitelistAdminCommand extends TempoCommand {
             return;
         }
 
-        val optUser = UserManager.getInstance().get(args[1]);
-
-        if (!optUser.isPresent()) {
-            source.sendMessage(TextComponent.of("User not found.", TextColor.GRAY));
-            return;
-        }
-
-        val user = optUser.get();
-
         switch (args[0].toLowerCase()) {
+            case "priority":
+                int priority = 0;
+                try {
+                    priority = Integer.parseInt(args[1]);
+                } catch (NumberFormatException ignored) {}
+
+                WhitelistConfig.getInstance().setRequiredRankWeight(priority);
+                source.sendMessage(TextComponent.of("Set whitelist required rank weight to " + priority, TextColor.GRAY));
+                break;
+            case "tokens":
+                boolean state = false;
+                val stateStr = args[1];
+
+                if (stateStr.equalsIgnoreCase("on") || stateStr.equalsIgnoreCase("yes") || stateStr.equalsIgnoreCase("true")) {
+                    state = true;
+                }
+
+                WhitelistConfig.getInstance().setEnableWhitelistTokens(state);
+                source.sendMessage(TextComponent.of((state ? "Enabled" : "Disabled") + " whitelist tokens", TextColor.GRAY));
+                break;
             case "check":
+                var optUser = UserManager.getInstance().get(args[1]);
+
+                if (!optUser.isPresent()) {
+                    source.sendMessage(TextComponent.of("User not found.", TextColor.GRAY));
+                    return;
+                }
+
+                var user = optUser.get();
+
                 if (!user.isWhitelisted()) {
                     source.sendMessage(TextComponent.of(user.getUserName() + " is not whitelisted and has " + user.getWhitelists() + " tokens remaining.", TextColor.GRAY));
                     return;
@@ -44,6 +65,15 @@ public class WhitelistAdminCommand extends TempoCommand {
                 source.sendMessage(TextComponent.of(user.getUserName() + " has " + user.getWhitelists() + " tokens remaining.", TextColor.GRAY));
                 break;
             case "add":
+                optUser = UserManager.getInstance().get(args[1]);
+
+                if (!optUser.isPresent()) {
+                    source.sendMessage(TextComponent.of("User not found.", TextColor.GRAY));
+                    return;
+                }
+
+                user = optUser.get();
+
                 if (args.length != 3) {
                     sendHelp(source);
                     return;
@@ -68,6 +98,11 @@ public class WhitelistAdminCommand extends TempoCommand {
     private void sendHelp(CommandSource source) {
         source.sendMessage(TextComponent.of("Help for /whitelistadmin", TextColor.GOLD));
         source.sendMessage(TextComponent.of(""));
+        source.sendMessage(TextComponent.of("Whitelist rank management commands", TextColor.WHITE));
+        source.sendMessage(TextComponent.of("- /whitelistadmin priority [priority=0]", TextColor.GRAY));
+        source.sendMessage(TextComponent.of(""));
+        source.sendMessage(TextComponent.of("Whitelist token management commands", TextColor.WHITE));
+        source.sendMessage(TextComponent.of("- /whitelistadmin tokens [on|off]", TextColor.GRAY));
         source.sendMessage(TextComponent.of("- /whitelistadmin check [user]", TextColor.GRAY));
         source.sendMessage(TextComponent.of("- /whitelistadmin add [user] [tokens]", TextColor.GRAY));
         source.sendMessage(TextComponent.of(""));

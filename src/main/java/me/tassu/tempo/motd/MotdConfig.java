@@ -16,14 +16,10 @@ public class MotdConfig extends EasyConfig<MotdConfig> {
 
     @Getter
     @Setting
-    private String ip = "play.tassu.me";
-
-    @Getter
-    @Setting
-    private String title = "A minecraft server.";
+    private String message = "&6&lplay.tassu.me&r&8 ❂ &7A minecraft server.\n&7█&r&f {{MESSAGE}}";
 
     @Setting
-    private List<String> lower = Lists.newArrayList(
+    private List<String> messages = Lists.newArrayList(
             "ultimate gamig expirence since 2018",
             "just a minecraft server",
             "join now for free nothing",
@@ -31,7 +27,7 @@ public class MotdConfig extends EasyConfig<MotdConfig> {
     );
 
     public String getLowerString() {
-        return lower.get(ThreadLocalRandom.current().nextInt(lower.size()));
+        return messages.get(ThreadLocalRandom.current().nextInt(messages.size()));
     }
 
 }
