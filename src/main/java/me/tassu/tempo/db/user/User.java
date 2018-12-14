@@ -71,6 +71,9 @@ public class User {
     @Getter
     private int whitelists;
 
+    @Getter
+    private boolean staffChatEnabled;
+
     public Rank getRank() {
         return RankManager.getInstance().forName(rank);
     }
@@ -98,6 +101,8 @@ public class User {
 
         this.whitelists = document.getInteger("whitelist_tokens", 0);
 
+        this.staffChatEnabled = document.getBoolean("staff_chat_enabled", false);
+
         Tempo.getInstance().getLogger().info("Reloaded user {}.", uuid.toString());
     }
 
@@ -113,5 +118,12 @@ public class User {
 
         this.whitelistedBy = whitelistedBy;
         addToSaveQueue("whitelisted_by", whitelistedBy.toString());
+    }
+
+    public void setStaffChatEnabled(boolean staffChatEnabled) {
+        if (staffChatEnabled == this.staffChatEnabled) return;
+
+        this.staffChatEnabled = staffChatEnabled;
+        addToSaveQueue("staff_chat_enabled", staffChatEnabled);
     }
 }
