@@ -119,7 +119,7 @@ public class Tempo {
         new StaffConfig(factory);
         val staffChatHandler = new StaffChatHandler();
         server.getEventManager().register(this, staffChatHandler);
-        server.getCommandManager().register(staffChatHandler, "find");
+        server.getCommandManager().register(staffChatHandler, "sc", "staffchat");
 
         // motd
         server.getEventManager().register(this, new MotdListener(this));

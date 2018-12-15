@@ -32,6 +32,8 @@ import lombok.val;
 import me.tassu.tempo.Tempo;
 import me.tassu.tempo.db.user.rank.Rank;
 import me.tassu.tempo.db.user.rank.RankManager;
+import net.kyori.text.Component;
+import net.kyori.text.TextComponent;
 import org.bson.Document;
 
 import java.util.HashMap;
@@ -102,8 +104,6 @@ public class User {
         this.whitelists = document.getInteger("whitelist_tokens", 0);
 
         this.staffChatEnabled = document.getBoolean("staff_chat_enabled", false);
-
-        Tempo.getInstance().getLogger().info("Reloaded user {}.", uuid.toString());
     }
 
     public void setWhitelists(int whitelists) {
@@ -125,5 +125,10 @@ public class User {
 
         this.staffChatEnabled = staffChatEnabled;
         addToSaveQueue("staff_chat_enabled", staffChatEnabled);
+    }
+
+    public void sendMessage(Component message) {
+        Tempo.getInstance().getServer().getPlayer(uuid)
+                .ifPresent(it -> it.sendMessage(message));
     }
 }
