@@ -27,16 +27,23 @@ package me.tassu.tempo.motd;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
+import lombok.Getter;
 import lombok.val;
 import me.tassu.tempo.Tempo;
 import net.kyori.text.serializer.ComponentSerializers;
 
 public class MotdListener {
 
+    @Getter
+    private static MotdListener instance;
+
     private ProxyServer server;
+
+    @Getter
     private MotdConfig config;
 
     public MotdListener(Tempo tempo) {
+        instance = this;
         this.server = tempo.getServer();
         this.config = new MotdConfig(tempo.getFactory());
     }

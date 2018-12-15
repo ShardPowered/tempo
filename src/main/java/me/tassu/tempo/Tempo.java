@@ -41,6 +41,8 @@ import me.tassu.tempo.db.MongoManager;
 import me.tassu.tempo.db.user.UserManager;
 import me.tassu.tempo.db.user.rank.RankManager;
 import me.tassu.tempo.motd.MotdListener;
+import me.tassu.tempo.staff.chat.StaffChatHandler;
+import me.tassu.tempo.staff.conf.StaffConfig;
 import me.tassu.tempo.whitelist.WhitelistAdminCommand;
 import me.tassu.tempo.whitelist.WhitelistCommand;
 import me.tassu.tempo.whitelist.WhitelistConfig;
@@ -113,6 +115,12 @@ public class Tempo {
         server.getCommandManager().register(new WhitelistCommand(), "whitelist");
         server.getCommandManager().register(new WhitelistAdminCommand(), "whitelistadmin");
 
+        // staff utilities
+        new StaffConfig(factory);
+        val staffChatHandler = new StaffChatHandler();
+        server.getEventManager().register(this, staffChatHandler);
+        server.getCommandManager().register(staffChatHandler, "sc", "staffchat");
+
         // motd
         server.getEventManager().register(this, new MotdListener(this));
 
@@ -124,6 +132,8 @@ public class Tempo {
     public void onStop(ProxyShutdownEvent event) {
         try {
             WhitelistConfig.getInstance().save();
+            StaffConfig.getInstance().save();
+            MotdListener.getInstance().getConfig().save();
             MongoManager.getInstance().getConfig().save();
         } catch (ObjectMappingException | IOException e) {
             throw new RuntimeException("Failure saving whitelist config", e);
