@@ -113,7 +113,7 @@ public class StaffChatHandler extends TempoCommand {
             var message = event.getMessage();
 
             if (message.startsWith(config.getStaffChatPrefix()) && (!config.getStaffChatPrefix().isEmpty())) {
-                message = message.substring(0, config.getStaffChatPrefix().length());
+                message = message.substring(config.getStaffChatPrefix().length());
             }
 
             event.setResult(PlayerChatEvent.ChatResult.denied());

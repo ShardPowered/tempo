@@ -72,7 +72,7 @@ public class FindCommand extends TempoCommand {
                 .append(TextComponent.builder("(warp)").color(TextColor.GRAY)
                         .decoration(TextDecoration.ITALIC, true)
                         .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/server " + connection.get().getServerInfo().getName()))
-                        .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport to the server")))
+                        .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to connect to the server")))
                         .build());
 
         source.sendMessage(message);

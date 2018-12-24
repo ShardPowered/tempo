@@ -44,7 +44,7 @@ public class StaffConfig extends EasyConfig<StaffConfig> {
 
     @Getter
     @Setting(comment = "set to empty string to disable")
-    private String staffChatPrefix = "!";
+    private String staffChatPrefix = "@";
 
     @Getter
     @Setting

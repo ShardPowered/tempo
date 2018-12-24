@@ -41,6 +41,7 @@ import me.tassu.tempo.db.MongoManager;
 import me.tassu.tempo.db.user.UserManager;
 import me.tassu.tempo.db.user.rank.RankManager;
 import me.tassu.tempo.motd.MotdListener;
+import me.tassu.tempo.plugin.MessagingChannelListener;
 import me.tassu.tempo.staff.chat.StaffChatHandler;
 import me.tassu.tempo.staff.conf.StaffConfig;
 import me.tassu.tempo.whitelist.WhitelistAdminCommand;
@@ -124,7 +125,8 @@ public class Tempo {
         // motd
         server.getEventManager().register(this, new MotdListener(this));
 
-        // other commands
+        // other utils
+        server.getEventManager().register(this, new MessagingChannelListener(this));
         server.getCommandManager().register(new FindCommand(server), "find");
     }
 
