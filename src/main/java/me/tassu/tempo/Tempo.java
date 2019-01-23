@@ -36,6 +36,8 @@ import lombok.val;
 import me.tassu.cfg.ConfigFactory;
 import me.tassu.cfg.impl.HoconConfigFactory;
 import me.tassu.tempo.cmd.FindCommand;
+import me.tassu.tempo.cmd.MoveCommand;
+import me.tassu.tempo.cmd.SaltyDisconnectCommand;
 import me.tassu.tempo.db.MongoConfig;
 import me.tassu.tempo.db.MongoManager;
 import me.tassu.tempo.db.user.UserManager;
@@ -127,7 +129,9 @@ public class Tempo {
 
         // other utils
         server.getEventManager().register(this, new MessagingChannelListener(this));
+        server.getCommandManager().register(new SaltyDisconnectCommand(server), "salt");
         server.getCommandManager().register(new FindCommand(server), "find");
+        server.getCommandManager().register(new MoveCommand(server), "move");
     }
 
     @Subscribe

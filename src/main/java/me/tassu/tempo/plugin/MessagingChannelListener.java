@@ -83,6 +83,11 @@ public class MessagingChannelListener {
                 Optional<RegisteredServer> server = tempo.getServer().getServer(in.readUTF());
                 server.ifPresent(it -> connection.getPlayer().createConnectionRequest(it).fireAndForget());
                 break;
+
+            case "Identify":
+                out.writeUTF("Identify");
+                out.writeUTF(connection.getServerInfo().getName());
+                break;
         }
 
         byte[] data = out.toByteArray();
